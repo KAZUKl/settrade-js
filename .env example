@@ -1,0 +1,14 @@
+# Settrade OpenAPI Credentials Template
+# Copy this file to '.env' and fill in your actual credentials.
+
+# Standard Investor Credentials
+SETTRADE_APP_ID=your_settrade_app_id_here
+SETTRADE_APP_SECRET=your_base64_encoded_private_key_here
+SETTRADE_APP_CODE=your_app_code_here
+SETTRADE_BROKER_ID=your_broker_id_here # e.g. 098 or SANDBOX
+
+# Market Representative (Broker IC) Credentials (If applicable)
+SETTRADE_EQ_APP_ID=your_mkt_rep_app_id_here
+SETTRADE_EQ_APP_SECRET=your_mkt_rep_base64_encoded_private_key_here
+SETTRADE_EQ_APP_CODE=your_mkt_rep_app_code_here
+SETTRADE_EQ_BROKER_ID=your_mkt_rep_broker_id_here
