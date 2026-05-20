@@ -1,7 +1,7 @@
 {
   "name": "settrade",
   "version": "1.0.0",
-  "description": "A lightweight, modern, and highly efficient JavaScript/TypeScript SDK for the **Settrade OpenAPI v3**. This SDK is designed and optimized for both **Node.js** and the **Bun Runtime**, enabling algorithmic traders and developers to seamlessly connect to Thailand's Equity and Derivatives (TFEX) markets.",
+  "description": "A lightweight, modern, and highly efficient JavaScript/TypeScript SDK for the **Settrade OpenAPI**. This SDK is designed and optimized for both **Node.js** and the **Bun Runtime**, enabling algorithmic traders and developers to seamlessly connect to Thailand's Equity and Derivatives (TFEX) markets.",
   "license": "ISC",
   "author": "",
   "type": "module",
