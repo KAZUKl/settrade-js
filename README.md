@@ -1,6 +1,6 @@
 # 🚀 Settrade OpenAPI SDK (Node.js & Bun Native)
 
-A lightweight, modern, and highly efficient JavaScript/TypeScript SDK for the **Settrade OpenAPI v3**. This SDK is designed and optimized for both **Node.js** and the **Bun Runtime**, enabling algorithmic traders and developers to seamlessly connect to Thailand's Equity and Derivatives (TFEX) markets.
+A lightweight, modern, and highly efficient JavaScript/TypeScript SDK for the **Settrade OpenAPI**. This SDK is designed and optimized for both **Node.js** and the **Bun Runtime**, enabling algorithmic traders and developers to seamlessly connect to Thailand's Equity and Derivatives (TFEX) markets.
 
 This SDK natively handles REST APIs for market data, trading operations, port management, security signatures, real-time WebSocket subscriptions (MQTT over WebSockets) with automatic Protobuf decoding, and NTP-based local time synchronization.
 
