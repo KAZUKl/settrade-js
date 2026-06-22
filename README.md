@@ -1,6 +1,6 @@
 # 🚀 Settrade OpenAPI SDK (Node.js & Bun Native)
 
-A lightweight, modern, and highly efficient JavaScript/TypeScript SDK for the **Settrade OpenAPI**. This SDK is designed and optimized for both **Node.js** and the **Bun Runtime**, enabling algorithmic traders and developers to seamlessly connect to Thailand's Equity and Derivatives (TFEX) markets.
+A lightweight, modern, and highly efficient JavaScript/TypeScript SDK for the **Settrade OpenAPI v3**. This SDK is designed and optimized for both **Node.js** and the **Bun Runtime**, enabling algorithmic traders and developers to seamlessly connect to Thailand's Equity and Derivatives (TFEX) markets.
 
 This SDK natively handles REST APIs for market data, trading operations, port management, security signatures, real-time WebSocket subscriptions (MQTT over WebSockets) with automatic Protobuf decoding, and NTP-based local time synchronization.
 
@@ -22,16 +22,20 @@ This SDK natively handles REST APIs for market data, trading operations, port ma
 Here is a breakdown of the key files included in the SDK:
 
 ```text
-├── Context.js         # Manages connection context, authentication tokens, and rate limit states.
-├── Investor.js        # Core user facade representing an Investor or Market Representative.
-├── Market.js          # REST API endpoints for market quotes and technical charts (candlesticks).
-├── Realtime.js        # Handles WebSocket (MQTT over WSS) setup and topic subscriptions.
-├── Trading.js         # Handles order execution, portfolio lookups, and cancellations (Equity & Derivatives).
-├── schemas.js         # Auto-generated Protobuf binary encoder/decoder functions.
-├── settrade.proto     # Official Google Protobuf schema definitions for real-time messages.
-├── util.js            # Cryptographic signature utilities, NTP syncing, and Protobuf converters.
-├── tsconfig.json      # TypeScript compiler configuration.
-└── package.json       # Node/Bun dependencies and project metadata.
+├── dist/                  # Compiled CJS, ESM, and DTS bundles (generated via build)
+├── src/                   # TypeScript source files
+│   ├── Context.ts         # Manages connection context, authentication tokens, and rate limit states.
+│   ├── Investor.ts        # Core user facade representing an Investor or Market Representative.
+│   ├── Market.ts          # REST API endpoints for market quotes and technical charts (candlesticks).
+│   ├── Realtime.ts        # Handles WebSocket (MQTT over WSS) setup and topic subscriptions.
+│   ├── Trading.ts         # Handles order execution, portfolio lookups, and cancellations.
+│   ├── index.ts           # Main SDK export entrypoint.
+│   ├── schemas.js         # Auto-generated Protobuf binary encoder/decoder functions.
+│   ├── schemas.d.ts       # TypeScript type declarations for schemas.js.
+│   ├── settrade.proto     # Official Google Protobuf schema definitions for real-time messages.
+│   └── util.ts            # Cryptographic signature utilities, NTP syncing, and Protobuf converters.
+├── tsconfig.json          # TypeScript compiler configuration.
+└── package.json           # Node/Bun dependencies, project metadata, and build scripts.
 ```
 
 ---
@@ -46,6 +50,14 @@ bun install
 
 # Using npm / Node.js
 npm install
+```
+
+### Building the Library
+Before publishing or importing the library locally, run the build command to generate ESM, CommonJS, and declaration type outputs:
+
+```bash
+# Compile and bundle
+bun run build
 ```
 
 ---
@@ -82,10 +94,10 @@ To use the SDK, you will need credentials supplied by your broker or a sandbox t
 
 ### 1. Basic Initialization (Environment Variables)
 
-```javascript
+```typescript
 // For Node.js, ensure 'dotenv/config' is loaded
 import 'dotenv/config';
-import { Investor } from './Investor.js';
+import { Investor } from 'settrade';
 
 // Initialize the Investor instance using environment variables
 const investor = new Investor({
@@ -93,8 +105,7 @@ const investor = new Investor({
     app_secret: process.env.SETTRADE_APP_SECRET, // Base64-encoded private key
     app_code: process.env.SETTRADE_APP_CODE,
     broker_id: process.env.SETTRADE_BROKER_ID,   // Broker code (e.g., '098' or 'SANDBOX')
-    is_auto_queue: true,                        // Enable automatic API rate limit queueing
-    environment: 'prod'                          // 'prod' (Production) or 'sandbox' (Testing)
+    is_auto_queue: true,                         // Enable automatic API rate limit queueing
 });
 
 // Synchronize with NTP server and log in to obtain JWT access tokens
@@ -102,9 +113,13 @@ await investor.init();
 console.log("Logged in successfully to Settrade!");
 ```
 
+> [!NOTE]
+> When compiling locally, you can import from the build output directory directly:
+> `import { Investor } from './dist/index.js';`
+
 ### 🧪 Sandbox / UAT Testing Mode
-For UAT testing, you can specify `broker_id` as `'SANDBOX'`. The [Investor.js](./Investor.js) base user helper automatically routes UAT traffic to the Sandbox API server (https://open-api-test.settrade.com) with standard testing broker `'098'`:
-```javascript
+For UAT testing, you can specify `broker_id` as `'SANDBOX'`. The `Investor` base user helper automatically routes UAT traffic to the Sandbox API server (https://open-api-test.settrade.com) with standard testing broker `'098'`:
+```typescript
 const investor = new Investor({
     app_id: 'sandbox-app-id',
     app_secret: 'sandbox-app-secret-base64',
@@ -121,9 +136,9 @@ await investor.init();
 Once initialized, you can create service objects to interact with the marketplace:
 
 ### 1. Fetching Market Data
-Use [Market.js](./Market.js) to retrieve historical candlesticks or current stock quotes:
+Use `MarketData` to retrieve historical candlesticks or current stock quotes:
 
-```javascript
+```typescript
 const market = investor.Market();
 
 // Fetch current market summary & stats for a stock (Quote)
@@ -138,9 +153,12 @@ console.log('Historical Candles:', candles);
 ```
 
 ### 2. Equity Trading
-Create an instance of `InvestorEquity` via [Trading.js](./Trading.js) to execute transactions and manage portfolios:
+Create an instance of `InvestorEquity` to execute transactions and manage portfolios:
 
-```javascript
+> [!IMPORTANT]
+> The Settrade OpenAPI gateway expects `side` parameters to be TitleCase (`'Buy'` or `'Sell'`), not uppercase.
+
+```typescript
 const equity = investor.Equity('YOUR_EQUITY_ACCOUNT_NO');
 
 // Get account balance, credit limits, and purchase power
@@ -153,8 +171,8 @@ console.log('My Portfolio:', portfolios);
 
 // Place a new Buy Order
 const order = await equity.placeOrder({
-    pin: '111111',          // 6-digit trade PIN
-    side: 'BUY',           // 'BUY' or 'SELL'
+    pin: '000000',          // 6-digit trade PIN
+    side: 'Buy',           // 'Buy' or 'Sell'
     symbol: 'PTT',         // Stock ticker symbol
     volume: 100,           // Board-lot matched volume
     price: 33.50,          // Price limit
@@ -168,18 +186,18 @@ const orders = await equity.getOrders();
 console.log('Today\'s Orders:', orders);
 
 // Cancel a specific order
-const cancelRes = await equity.cancelOrder('ORDER_NUMBER', '111111');
+const cancelRes = await equity.cancelOrder('ORDER_NUMBER', '000000');
 console.log('Cancellation Result:', cancelRes);
 
 // Cancel multiple orders at once
-const cancelAllRes = await equity.cancelOrders(['ORDER1', 'ORDER2'], '111111');
+const cancelAllRes = await equity.cancelOrders(['ORDER1', 'ORDER2'], '000000');
 console.log('Batch Cancel Result:', cancelAllRes);
 ```
 
 ### 3. Derivatives Trading (TFEX)
 Interact with futures and options via `InvestorDerivatives`:
 
-```javascript
+```typescript
 const derivatives = investor.Derivatives('YOUR_DERIVATIVES_ACCOUNT_NO');
 
 // Get TFEX account margins and purchasing power
@@ -188,10 +206,10 @@ console.log('TFEX Account Info:', derivativesInfo);
 
 // Place a new TFEX Order (Futures/Options)
 const tfexOrder = await derivatives.placeOrder({
-    pin: '111111',
+    pin: '000000',
     symbol: 'S50M26',        // Contract code
-    side: 'LONG',           // 'LONG' or 'SHORT'
-    position: 'OPEN',       // 'OPEN', 'CLOSE', or 'AUTO'
+    side: 'Long',           // 'Long' or 'Short'
+    position: 'Open',       // 'Open', 'Close', or 'Auto'
     price: 950.2,           // Contract price
     volume: 1,              // Number of contracts
     priceType: 'Limit',
@@ -205,10 +223,10 @@ console.log('TFEX Holdings:', tfexPortfolio);
 ```
 
 ### 4. Market Representative Operations
-If authorized as an IC (Investment Consultant) or Broker Marketing Officer, utilize `MarketRep` from [Investor.js](./Investor.js) to manage operations scoped on behalf of client accounts:
+If authorized as an IC (Investment Consultant) or Broker Marketing Officer, utilize `MarketRep` to manage operations scoped on behalf of client accounts:
 
-```javascript
-import { MarketRep } from './Investor.js';
+```typescript
+import { MarketRep } from 'settrade';
 
 const rep = new MarketRep({
     app_id: process.env.SETTRADE_EQ_APP_ID,
@@ -227,7 +245,7 @@ console.log('Client Portfolio Info:', clientInfo);
 
 // Submit order on behalf of client
 const repOrder = await repEquity.placeOrder('CLIENT_ACCOUNT_NO', {
-    side: 'BUY',
+    side: 'Buy',
     symbol: 'CPALL',
     volume: 100,
     price: 57.00,
@@ -240,11 +258,11 @@ const repOrder = await repEquity.placeOrder('CLIENT_ACCOUNT_NO', {
 
 ## 📡 Real-time WebSocket Streaming
 
-The SDK opens an MQTT-over-WebSocket session with Settrade hosts. Once connected, payloads are processed, matching topics are evaluated against their respective protobuf parsers, and results are returned as pure JavaScript objects in [Realtime.js](./Realtime.js).
+The SDK opens an MQTT-over-WebSocket session with Settrade hosts. Once connected, payloads are processed, matching topics are evaluated against their respective protobuf parsers, and results are returned as strongly typed JavaScript objects.
 
 ### Real-time Streaming Examples
 
-```javascript
+```typescript
 const realtime = investor.RealtimeDataConnection();
 
 // Connect to the WebSocket stream
@@ -260,14 +278,14 @@ realtime.subscribeCandlestick('PTT', '1m', (data) => {
 // 2. Subscribe to 10-level Bid/Offer orderbook feeds
 realtime.subscribeBidOffer('AOT', (data) => {
     console.log('📊 AOT 10-Level Orderbook:');
-    console.log(`Top Bid: ${data.bid_price1} (Vol: ${data.bid_volume1})`);
-    console.log(`Top Ask: ${data.ask_price1} (Vol: ${data.ask_volume1})`);
+    console.log(`Top Bid: ${data.bid_price1?.units} (Vol: ${data.bid_volume1})`);
+    console.log(`Top Ask: ${data.ask_price1?.units} (Vol: ${data.ask_volume1})`);
 });
 
 // 3. Subscribe to real-time asset summary updates
 realtime.subscribePriceInfo('CPALL', (data) => {
     console.log('💰 CPALL Market Update:');
-    console.log(`Last Price: ${data.last} | Projected Open: ${data.projected_open_price}`);
+    console.log(`Last Price: ${data.last?.units} | Projected Open: ${data.projected_open_price?.units}`);
     console.log(`Market Session Status: ${data.market_status}`);
 });
 
@@ -282,7 +300,7 @@ realtime.subscribeEquityOrder('YOUR_EQUITY_ACCOUNT_NO', (orderData) => {
 
 ## 🧬 Data Schemas & Protobuf Serialization
 
-All real-time messages transmitted from Settrade's socket server are compressed in binary Google Protobuf structures defined in [settrade.proto](./settrade.proto). The SDK relies on [schemas.js](./schemas.js) to decode these payloads seamlessly before executing event callbacks. Available decoders include:
+All real-time messages transmitted from Settrade's socket server are compressed in binary Google Protobuf structures defined in `src/settrade.proto`. The SDK relies on `src/schemas.js` and `src/schemas.d.ts` to decode these payloads seamlessly before executing event callbacks. Available decoders include:
 
 *   `decodeCandlestickV3(payload)`: Parses tick candlestick bars (`CandlestickV3`).
 *   `decodeBidOfferV3(payload)`: Parses full 10-tier bid/ask tables (`BidOfferV3`).
@@ -296,12 +314,12 @@ All real-time messages transmitted from Settrade's socket server are compressed 
 
 ## 🧰 Utility Helper Functions
 
-The [util.js](./util.js) helper module provides essential data conversion tools:
+The `src/util.ts` helper module provides essential data conversion tools:
 
 ### 1. `moneyToFloat(money)`
 Protobuf high-precision money objects are structured as `{ units: BigInt, nanos: number }`. This utility safely converts the structured money object into a standard float number in JavaScript:
-```javascript
-import { moneyToFloat } from './util.js';
+```typescript
+import { moneyToFloat } from 'settrade';
 
 const rawMoney = { units: 100, nanos: 500000000 }; // Represents 100.5
 const floatVal = moneyToFloat(rawMoney);
@@ -310,8 +328,8 @@ console.log(floatVal); // Output: 100.5
 
 ### 2. `parseProtoTimestamp(timeObj)`
 Converts Google Protobuf timestamp `{ seconds: BigInt, nanos: number }` structures into JavaScript epoch milliseconds:
-```javascript
-import { parseProtoTimestamp } from './util.js';
+```typescript
+import { parseProtoTimestamp } from 'settrade';
 
 const epochMs = parseProtoTimestamp({ seconds: 1715694219, nanos: 345000000 });
 const date = new Date(epochMs);

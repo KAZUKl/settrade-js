@@ -1,12 +1,22 @@
 {
   "name": "settrade",
   "version": "1.0.0",
-  "description": "A lightweight, modern, and highly efficient JavaScript/TypeScript SDK for the **Settrade OpenAPI**. This SDK is designed and optimized for both **Node.js** and the **Bun Runtime**, enabling algorithmic traders and developers to seamlessly connect to Thailand's Equity and Derivatives (TFEX) markets.",
+  "description": "A lightweight, modern, and highly efficient JavaScript/TypeScript SDK for the **Settrade OpenAPI v3**. This SDK is designed and optimized for both **Node.js** and the **Bun Runtime**, enabling algorithmic traders and developers to seamlessly connect to Thailand's Equity and Derivatives (TFEX) markets.",
   "license": "ISC",
   "author": "",
   "type": "module",
-  "main": "Context.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -65,10 +75,12 @@
     "ws": "^8.20.0"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/elliptic": "^6.4.18",
+    "@types/ws": "^8.18.1",
+    "tsup": "^8.5.1"
   },
   "peerDependencies": {
     "typescript": "^5"
-  },
-  "module": "index.ts"
+  }
 }
