@@ -1,0 +1,260 @@
+syntax = "proto3";
+
+package settrade;
+
+// --- google/type ---
+message Money {
+    string currency_code = 1;
+    int64 units = 2;
+    int32 nanos = 3;
+}
+
+message Timestamp {
+    int64 seconds = 1;
+    int32 nanos = 2;
+}
+
+message Date {
+    int32 year = 1;
+    int32 month = 2;
+    int32 day = 3;
+}
+
+message TimeOfDay {
+    int32 hours = 1;
+    int32 minutes = 2;
+    int32 seconds = 3;
+    int32 nanos = 4;
+}
+
+// --- BidOfferV3 ---
+enum BidOfferV3BidAskFlag {
+    UNDEFINED_FLAG = 0;
+    NORMAL = 1;
+    ATO = 2;
+    ATC = 3;
+}
+
+message BidOfferV3 {
+    string symbol = 1;
+    BidOfferV3BidAskFlag bid_flag = 22;
+    BidOfferV3BidAskFlag ask_flag = 23;
+    Money bid_price1 = 2;
+    Money bid_price2 = 3;
+    Money bid_price3 = 4;
+    Money bid_price4 = 5;
+    Money bid_price5 = 6;
+    Money bid_price6 = 24;
+    Money bid_price7 = 25;
+    Money bid_price8 = 26;
+    Money bid_price9 = 27;
+    Money bid_price10 = 28;
+    Money ask_price1 = 7;
+    Money ask_price2 = 8;
+    Money ask_price3 = 9;
+    Money ask_price4 = 10;
+    Money ask_price5 = 11;
+    Money ask_price6 = 29;
+    Money ask_price7 = 30;
+    Money ask_price8 = 31;
+    Money ask_price9 = 32;
+    Money ask_price10 = 33;
+    int64 bid_volume1 = 12;
+    int64 bid_volume2 = 13;
+    int64 bid_volume3 = 14;
+    int64 bid_volume4 = 15;
+    int64 bid_volume5 = 16;
+    int64 bid_volume6 = 34;
+    int64 bid_volume7 = 35;
+    int64 bid_volume8 = 36;
+    int64 bid_volume9 = 37;
+    int64 bid_volume10 = 38;
+    int64 ask_volume1 = 17;
+    int64 ask_volume2 = 18;
+    int64 ask_volume3 = 19;
+    int64 ask_volume4 = 20;
+    int64 ask_volume5 = 21;
+    int64 ask_volume6 = 39;
+    int64 ask_volume7 = 40;
+    int64 ask_volume8 = 41;
+    int64 ask_volume9 = 42;
+    int64 ask_volume10 = 43;
+}
+
+// --- CandlestickV3 ---
+message CandlestickV3 {
+    string symbol = 1;
+    string interval = 2;
+    int64 last_sequence = 3;
+    Timestamp time = 4;
+    Money open = 5;
+    Money high = 6;
+    Money low = 7;
+    Money close = 8;
+    int64 volume = 9;
+    Money value = 10;
+}
+
+// --- InfoV3 ---
+enum InfoV3SymbolMarketStatus {
+    UNDEFINED_MARKET_STATUS = 0;
+    PRE_OPEN_E = 1; PRE_OPEN1_E = 2; PRE_OPEN2_E = 3; OPEN_E = 4; OPEN1_E = 5; OPEN2_E = 6;
+    INTERMISSION_E = 7; CALL_E = 8; RUN_OFF_E = 9; CLOSE_E = 10;
+    FREEZE1_E = 11; FREEZE2_E = 12; FREEZE3_E = 13; HALT_E = 14; FULL_HALT_E = 15;
+    CIRCUIT_BREAK_E = 16; SUSPEND_E = 17; PAUSE_E = 18; EXPIRED_E = 19;
+    PRE_OPEN_D = 20; PRE_OPEN0_D = 21; PRE_OPEN1_D = 22; PRE_OPEN2_D = 23;
+    OPEN0_D = 24; OPEN1_D = 25; OPEN2_D = 26; DAY_D = 27;
+    PRE_SETTLEMENT_D = 28; SETTLEMENT_D = 29;
+    INTERMISSION1_D = 30; INTERMISSION2_D = 31; INTERMISSION3_D = 32;
+    CLOSE_D = 33; HALT_D = 34; FULL_HALT_D = 35; CIRCUIT_BREAK_D = 36;
+    SUSPEND_D = 37; PAUSE_D = 38; EXPIRED_D = 39;
+    NO_MATCHING_E = 40; MISSING41 = 41; PRE_DAY_E = 42; PRE_NIGHT_E = 43;
+    DAY_E = 44; NIGHT_E = 45; INTERMISSION_NIGHT_E = 46; CANCEL_E = 47;
+}
+
+message InfoV3 {
+    string symbol = 1;
+    Money projected_open_price = 6;
+    int64 projected_open_volume = 10;
+    Money high = 2;
+    Money low = 3;
+    Money last = 4;
+    Money change = 7;
+    int64 total_volume = 5;
+    Money total_value = 8;
+    InfoV3SymbolMarketStatus market_status = 9;
+}
+
+// --- EquityExchangeInfoV3 ---
+enum EquityMarketInfoV3EquityMarketStatus {
+    EQ_UNDEFINED_MARKET_STATUS = 0;
+    EQ_MISSING1 = 1; EQ_PRE_OPEN1 = 2; EQ_PRE_OPEN2 = 3; EQ_MISSING4 = 4;
+    EQ_OPEN1 = 5; EQ_OPEN2 = 6; EQ_INTERMISSION = 7; EQ_CALL = 8;
+    EQ_RUN_OFF = 9; EQ_CLOSE = 10; EQ_PRE_DAY = 11; EQ_PRE_NIGHT = 12;
+    EQ_DAY = 13; EQ_NIGHT = 14; EQ_INTERMISSION_NIGHT = 15; EQ_CANCEL = 16;
+}
+
+message EquityMarketInfoV3 {
+    string name = 1;
+    EquityMarketInfoV3EquityMarketStatus market_status = 2;
+    Money current = 3;
+    Money high = 4;
+    Money low = 5;
+    Money change = 6;
+    Money percent_change = 7;
+    int64 total_index_volume = 8;
+    Money total_index_value = 9;
+}
+
+message EquityExchangeInfoV3 {
+    EquityMarketInfoV3 market_info = 1;
+}
+
+// --- DerivExchangeInfoV3 ---
+enum DerivMarketInfoV3DerivMarketStatus {
+    DV_UNDEFINED_MARKET_STATUS = 0;
+    DV_PRE_OPEN0 = 1; DV_PRE_OPEN1 = 2; DV_PRE_OPEN2 = 3;
+    DV_OPEN0 = 4; DV_OPEN1 = 5; DV_OPEN2 = 6;
+    DV_INTERMISSION1 = 7; DV_INTERMISSION2 = 8; DV_INTERMISSION3 = 9;
+    DV_SETTLEMENT = 10; DV_CLOSE = 11; DV_MISSING12 = 12; DV_MISSING13 = 13;
+    DV_DAY = 14; DV_PRE_SETTLEMENT = 15;
+}
+
+message DerivMarketInfoV3 {
+    string name = 1;
+    DerivMarketInfoV3DerivMarketStatus market_status = 2;
+    int64 total_volume = 3;
+    int64 total_deal = 4;
+    int32 open_interest = 5;
+}
+
+message DerivExchangeInfoV3 {
+    DerivMarketInfoV3 market_info = 1;
+}
+
+// --- OrderEquityV3 ---
+enum OrderEquityV3PriceType {
+    EQ_UNDEFINED_PRICE_TYPE = 0;
+    EQ_LIMIT = 1; EQ_ATO = 2; EQ_ATC = 3; EQ_MARKET = 4;
+    EQ_MISSING5 = 5; EQ_MARKET_TO_LIMIT = 6;
+}
+
+enum OrderEquityV3BuySell {
+    EQ_UNDEFINED_BUYSELL = 0; EQ_BUY = 1; EQ_SELL = 2;
+}
+
+enum OrderEquityV3Valid {
+    EQ_UNDEFINED_VALID = 0; EQ_FOK = 1; EQ_IOC = 2; EQ_GTD = 3; EQ_GTC = 4; EQ_DAY = 5;
+}
+
+message OrderEquityV3 {
+    int32 version = 1;
+    string order_no = 2;
+    string ext_order_no = 3;
+    string account_no = 4;
+    TimeOfDay entry_time = 5;
+    Date trade_date = 6;
+    string symbol = 7;
+    bool is_nvdr = 8;
+    Money price = 9;
+    OrderEquityV3PriceType price_type = 10;
+    OrderEquityV3BuySell side = 11;
+    int64 volume = 12;
+    int64 matched_volume = 13;
+    int64 balance_volume = 14;
+    int64 cancelled_volume = 15;
+    OrderEquityV3Valid valid = 20;
+    Date until = 21;
+    string status = 16;
+    bool can_cancel = 17;
+    bool can_change_price_vol = 19;
+    bool can_change_nvdr = 22;
+    bool can_change_iceberg = 23;
+    bool can_change_account = 24;
+    bool is_trade_report = 25;
+}
+
+// --- OrderDerivV3 ---
+enum OrderDerivV3PriceType {
+    DV_UNDEFINED_PRICE_TYPE = 0;
+    DV_LIMIT = 1; DV_ATO = 2; DV_ATC = 3; DV_MARKET = 4;
+    DV_MISSING5A = 5; DV_MARKET_TO_LIMIT = 6;
+}
+
+enum OrderDerivV3LongShort {
+    DV_UNDEFINED_LONGSHORT = 0; DV_LONG = 1; DV_SHORT = 2; DV_LONG_AND_SHORT = 3;
+}
+
+enum OrderDerivV3Position {
+    DV_UNDEFINED_POSITION = 0; DV_OPEN = 1; DV_CLOSE = 2; DV_AUTO = 3;
+}
+
+enum OrderDerivV3Valid {
+    DV_UNDEFINED_VALID = 0; DV_FOK = 1; DV_IOC = 2; DV_GTD = 3; DV_GTC = 4;
+    DV_MISSING5 = 5; DV_MISSING6 = 6; DV_MISSING7 = 7; DV_DAY = 8;
+}
+
+message OrderDerivV3 {
+    int32 version = 1;
+    string order_no = 2;
+    string ext_order_no = 3;
+    string account_no = 4;
+    string enter_id = 5;
+    Timestamp entry_time = 6;
+    string series_id = 7;
+    OrderDerivV3LongShort side = 8;
+    OrderDerivV3Position position = 9;
+    Money price = 10;
+    OrderDerivV3PriceType price_type = 11;
+    int64 volume = 12;
+    int64 balance_volume = 13;
+    int64 matched_volume = 14;
+    int64 cancelled_volume = 15;
+    OrderDerivV3Valid valid = 16;
+    string until = 17;
+    string status = 18;
+    bool can_cancel = 19;
+    bool can_change = 20;
+    bool can_change_price_vol = 21;
+    bool is_trade_report = 22;
+}
